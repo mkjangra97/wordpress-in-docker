@@ -1,8 +1,8 @@
 #!/bin/bash
 # Combined WP backup: DB dump (gz) + themes & plugins (separate .tar.gz)
 # Minimal + cron-friendly. Keep last 3 backups per type.
-# Save: /home/manish/wp-backup.sh
-# Make executable: sudo chmod +x /home/manish/wp-backup.sh
+# Save: /home/$USER/wp-backup.sh
+# Make executable: sudo chmod +x /home/$USER/wp-backup.sh
 
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 export PATH
