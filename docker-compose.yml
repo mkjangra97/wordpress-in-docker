@@ -1,6 +1,7 @@
 version: '3.9'
+
 services:
-# MYSQL Database Service
+  # MYSQL Database Service
   mysql:
     image: mysql:8.4
     container_name: wordpress-database
@@ -10,29 +11,24 @@ services:
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-    # Persist MySQL data
     volumes:
       - wordpress_database:/var/lib/mysql
-    # Connect to Custom Network
     networks:
       - wordpress-network
-    # Healthcheck for MySQL service
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1"]
       interval: 30s
       timeout: 10s
       retries: 5
 
-# WordPress Service
+  # WordPress Service
   wordpress:
     image: wordpress:php8.2-apache
     container_name: wordpress
     restart: unless-stopped
-    # Wait for MySQL service to be healthy before starting WordPress
     depends_on:
       mysql:
         condition: service_healthy
-    # Expose WordPress on port 4600
     ports:
       - "4600:80"
     environment:
@@ -40,38 +36,34 @@ services:
       WORDPRESS_DB_USER: ${MYSQL_USER}
       WORDPRESS_DB_PASSWORD: ${MYSQL_PASSWORD}
       WORDPRESS_DB_NAME: ${MYSQL_DATABASE}
-    # Persist WordPress data
     volumes:
       - wordpress_data:/var/www/html
-    # Connect to Custom Network
+    networks:
       - wordpress-network
-    # Healthcheck for WordPress service
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost/"]
       interval: 30s
       timeout: 5s
       retries: 3
 
-# Redis Service for Caching
+  # Redis Service
   redis:
     image: redis:latest
     container_name: wordpress-redis
     restart: unless-stopped
-    command: ["redis-server", "--appendonly", "yes"] # Enable data persistence
-    # Persist Redis data
+    command: ["redis-server", "--appendonly", "yes"]
     volumes:
       - wordpress_redis:/data
-    # Connect to Custom Network
     networks:
       - wordpress-network
 
-# Define Volumes and Networks
-
 volumes:
   wordpress_data:
+    name: wordpress-data
   wordpress_database:
+    name: wordpress-database
   wordpress_redis:
-    name: wordpress-volumes
+    name: wordpress-redis
 
 networks:
   wordpress-network:
